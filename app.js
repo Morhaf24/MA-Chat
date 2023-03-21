@@ -39,9 +39,6 @@ app.get("/", (req, res) => {
   // Initialize the database
   await initializeMariaDB();
   await initializeDBSchema();
-  // TODO: REMOVE!!!! test the database connection
-  const result = await executeSQL("SELECT * FROM users;");
-  console.log(result);
 
   //start the web server
   const serverPort = process.env.PORT || 3000;

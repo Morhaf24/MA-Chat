@@ -37,4 +37,4 @@ function onMessage(ws, message) {
 }
 
 
-module.exports = { initializeWebsocketServer };
+module.exports = { initializeWebsocketServer, onMessage };

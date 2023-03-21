@@ -1,0 +1,9 @@
+diff a/client/index.html b/client/index.html	(rejected hunks)
+@@ -13,7 +13,6 @@
+     </div>
+     <div class="quests" id="quests" ><a href="edit.html"><img src="images/setting_logo.png" alt="" class="setting_logo"></a>    
+     </div>
+-    <div class="quests" id="quests"></div>
+     <div class="chatWindow" id="chatWindow"></div>
+     <form id="messageForm">
+         <input type="text" id="messageInput" placeholder="Type your message">
