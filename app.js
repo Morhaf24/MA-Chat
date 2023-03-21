@@ -10,6 +10,11 @@ const { initializeMariaDB, initializeDBSchema, executeSQL } = require("./server/
 const app = express();
 const server = http.createServer(app);
 
+// add body-parser middleware to parse request bodies
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 // create a livereload server
 const env = process.env.NODE_ENV || "development";
 if (env !== "production") {
@@ -29,13 +34,15 @@ app.use(express.static("client"));
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/client/index.html");
 });
-  // Initialize the websocket server
-  initializeWebsocketServer(server);
-  // Initialize the REST api
-  initializeAPI(app);
-  
-  // Allowing top-level await
-  (async function () {
+
+// Initialize the websocket server
+initializeWebsocketServer(server);
+
+// Initialize the REST api
+initializeAPI(app);
+
+// Allowing top-level await
+(async function () {
   // Initialize the database
   await initializeMariaDB();
   await initializeDBSchema();

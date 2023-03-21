@@ -1,22 +1,33 @@
 const WebSocket = require("ws");
+const { addUser }  = require("./api");
 const clients = new Set();
 
-// Intiiate the websocket server
+// Initiate the websocket server
 const initializeWebsocketServer = (server) => {
   const websocketServer = new WebSocket.Server({ server });
-  websocketServer.on("connection", onConnection);
+  websocketServer.on("connection", (ws, req) => onConnection(ws, req));
 };
 
-// If a new connection is established, the onConnection function is called
-function onConnection(ws) {
+async function onConnection(ws, req) {
+  let result; // define result variable outside try block
   console.log("New websocket connection");
+  try {
+    result = await addUser(req);
+    if (result.success) {
+      ws.send(result.message);
+    } else {
+      ws.send("Error adding user");
+    }
+  } catch (error) {
+    console.error(error);
+  }
   clients.add(ws);
   ws.on("message", (blob) => {
     const message = blob.toString();
-    console.log("Message received: " + message);
+    console.log("Message received from "+ result.message + ": " + message); // use result variable here
     for (const client of clients) {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(message);
+        client.send(result.message + ": " + message); // include sender name in message sent to clients
       }
     }
   });
@@ -25,16 +36,5 @@ function onConnection(ws) {
   });
 }
 
-  
-// If a new message is received, the onMessage function is called
-function onMessage(ws, message) {
-  console.log("Message received: " + message);
-  for (const client of clients) {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(message);
-    }
-  }
-}
 
-
-module.exports = { initializeWebsocketServer, onMessage };
+module.exports = { initializeWebsocketServer };
