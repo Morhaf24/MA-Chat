@@ -1,5 +1,6 @@
 const WebSocket = require("ws");
-const { addUser }  = require("./api");
+const { addUser }  = require("./user");
+
 const clients = new Set();
 
 // Initiate the websocket server
@@ -9,12 +10,12 @@ const initializeWebsocketServer = (server) => {
 };
 
 async function onConnection(ws, req) {
-  let result; // define result variable outside try block
-  console.log("New websocket connection");
+  let result;
   try {
     result = await addUser(req);
     if (result.success) {
       ws.send(result.message);
+      ws.name = result.name; // set the client name
     } else {
       ws.send("Error adding user");
     }
@@ -24,10 +25,11 @@ async function onConnection(ws, req) {
   clients.add(ws);
   ws.on("message", (blob) => {
     const message = blob.toString();
-    console.log("Message received from "+ result.message + ": " + message); // use result variable here
+    console.log("[Message received from "+ ws.name + ": " + message);
     for (const client of clients) {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(result.message + ": " + message); // include sender name in message sent to clients
+        const name = client.name;
+        client.send(name + ": " + message);
       }
     }
   });
@@ -36,5 +38,21 @@ async function onConnection(ws, req) {
   });
 }
 
+function getActiveClients() {
+  const activeClients = [...clients];
+  for (const client of clients) {
+    if (client.readyState === WebSocket.OPEN) {
+      activeClients.push(client);
+    }
+  }
+  return activeClients;
+}
 
-module.exports = { initializeWebsocketServer };
+function getActiveClientNames() {
+  const activeClients = [...clients].filter(client => client.readyState === WebSocket.OPEN);
+  const activeNames = activeClients.map((client) => client.name);
+  console.log(activeNames);
+  return activeNames;
+}
+
+module.exports = { initializeWebsocketServer, clients, getActiveClientNames };
