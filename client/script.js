@@ -6,7 +6,7 @@ function addMessage(message) {
 
   const timeNode = document.createElement("span");
   timeNode.classList.add("message-time");
-  timeNode.textContent = `[${message.time} `;
+  timeNode.textContent = `${message.time} `;
   messageNode.appendChild(timeNode);
 
   const messageContentNode = document.createElement("span");
@@ -52,14 +52,37 @@ document.getElementById('messageForm').addEventListener('submit', (event) => {
   }
 });
 
-fetch("/api/active")
-  .then((response) => response.json())
-  .then((activeClientNames) => {
-    const activeList = document.getElementById("activeList");
-    activeClientNames.forEach((name) => {
-      const li = document.createElement("li");
-      li.textContent = name;
-      activeList.appendChild(li);
-    });
-  })
-  .catch((error) => console.error(error));
+const questsDiv = document.getElementById("quests");
+
+function updateActiveUsersList(activeUsers) {
+  const numUsers = activeUsers.length;
+  const list = document.createElement("ul");
+  let usersString = "";
+  for (let i = 0; i < numUsers; i++) {
+    const user = activeUsers[i];
+    usersString += user;
+    if (i < numUsers - 1) {
+      usersString += ", ";
+    }
+  }
+  const usersElement = document.createElement("div");
+  usersElement.textContent = usersString;
+  list.appendChild(usersElement);
+
+  const widthPercentage = 100 * usersElement.offsetWidth / window.innerWidth;
+  if (widthPercentage > 80) {
+    const newLine = document.createElement("br");
+    list.appendChild(newLine);
+  }
+
+  questsDiv.innerHTML = "";
+  questsDiv.appendChild(list);
+}
+
+socket.addEventListener("message", (event) => {
+  const data = JSON.parse(event.data);
+  if (data.type === "active_users") {
+    updateActiveUsersList(data.data);
+  }
+});
+

@@ -1,58 +1,73 @@
 const WebSocket = require("ws");
-const { addUser }  = require("./user");
-
+const { addUser }  = require("./api");
 const clients = new Set();
 
-// Initiate the websocket server
+// Initialite the WebSocketserver
 const initializeWebsocketServer = (server) => {
   const websocketServer = new WebSocket.Server({ server });
   websocketServer.on("connection", (ws, req) => onConnection(ws, req));
 };
 
 async function onConnection(ws, req) {
+  ws.result = {};
+
   let result;
+  console.log("New WebSocket Connection");
+
   try {
     result = await addUser(req);
     if (result.success) {
       ws.send(result.message);
-      ws.name = result.name; // set the client name
+      ws.result.message = result.message;
     } else {
-      ws.send("Error adding user");
+      ws.send("Error by adding the User");
     }
   } catch (error) {
     console.error(error);
   }
   clients.add(ws);
+  const activeUsers = getActiveUsers();
+  for (const client of clients) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify({
+        type: "active_users",
+        data: activeUsers
+      }));
+    }
+  }
   ws.on("message", (blob) => {
     const message = blob.toString();
-    console.log("[Message received from "+ ws.name + ": " + message);
+    console.log("New Message From "+ ws.result.message + ": " + message); // Greife auf die result-Eigenschaft des WebSocket-Objekts zu
+  
     for (const client of clients) {
       if (client.readyState === WebSocket.OPEN) {
-        const name = client.name;
-        client.send(name + ": " + message);
+        client.send(ws.result.message + ":] " + message);
       }
     }
   });
   ws.on("close", () => {
     clients.delete(ws);
+    const activeUsers = getActiveUsers();
+    for (const client of clients) {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify({
+          type: "active_users",
+          data: activeUsers
+        }));
+      }
+    }
   });
 }
 
-function getActiveClients() {
-  const activeClients = [...clients];
+function getActiveUsers() {
+  const activeUsers = [];
   for (const client of clients) {
     if (client.readyState === WebSocket.OPEN) {
-      activeClients.push(client);
+      const user = client.result ? client.result.message : "Unknown User";
+      activeUsers.push(user);
     }
   }
-  return activeClients;
+  return activeUsers;
 }
 
-function getActiveClientNames() {
-  const activeClients = [...clients].filter(client => client.readyState === WebSocket.OPEN);
-  const activeNames = activeClients.map((client) => client.name);
-  console.log(activeNames);
-  return activeNames;
-}
-
-module.exports = { initializeWebsocketServer, clients, getActiveClientNames };
+module.exports = { initializeWebsocketServer };

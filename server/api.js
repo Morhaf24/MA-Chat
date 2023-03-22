@@ -1,6 +1,4 @@
 const { executeSQL } = require("./database");
-const { addUser } = require("./user");
-const { getActiveClientNames } = require("./websocketserver");
 
 const getUsers = async (req, res) => { 
   try {
@@ -33,13 +31,17 @@ const addNewMessage = async (message, time) => {
   }
 };
 
-const getActiveClientNamesHandler = async (req, res) => {
+const addUser = async (req) => {
   try {
-    const activeClientNames = getActiveClientNames();
-    res.json(activeClientNames);
+    const randomName = "quest" + Math.floor(Math.random() * 10000);
+    await executeSQL(`INSERT INTO users (name) VALUES ("${randomName}")`);
+    const result = await executeSQL("SELECT name FROM users ORDER BY id DESC LIMIT 1");
+    const username = result[0].name;
+    console.log(`${username} joined`);
+    return { success: true, message: `${username}`, username };
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    return { success: false, message: "Error adding user", username: null };
   }
 };
 
@@ -48,7 +50,6 @@ const initializeAPI = (app) => {
   app.get("/api/messages", getMessages);
   app.post("/api/users", addUser);
   app.post("/api/messages", addNewMessage);
-  app.get("/api/active", getActiveClientNamesHandler);
 };
 
 module.exports = { initializeAPI, addUser, addNewMessage };
