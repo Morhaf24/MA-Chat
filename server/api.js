@@ -1,11 +1,6 @@
 const { executeSQL } = require("./database");
-
-const initializeAPI = (app) => {
-  app.get("/api/users", getUsers);
-  app.get("/api/messages", getMessages);
-  app.post("/api/users", addUser);
-  app.post("/api/messages", addNewMessage);
-};
+const { addUser } = require("./user");
+const { getActiveClientNames } = require("./websocketserver");
 
 const getUsers = async (req, res) => { 
   try {
@@ -28,26 +23,32 @@ const getMessages = async (req, res) => {
   }
 };
 
-const addUser = async (req) => {
-  try {
-    const randomName = "quest" + Math.floor(Math.random() * 10000);
-    await executeSQL(`INSERT INTO users (name) VALUES ("${randomName}")`);
-    console.log(`${randomName}`);
-    return { success: true, message: `${randomName}]` };
-  } catch (error) {
-    console.error(error);
-    return { success: false, message: "Internal Server Error" };
-  }
-};
-
-
 const addNewMessage = async (message, time) => {
   try {
-    await executeSQL(`INSERT INTO messages (user_id, message, time) VALUES ('1', '${message}', '${time}')`);$
+    const values = [message, time];
+    await executeSQL("INSERT INTO messages (user_id, message, time) VALUES ('1', ?, ?)", values);
   } catch (error) {
     console.error(error);
     throw new Error("Internal Server Error");
   }
+};
+
+const getActiveClientNamesHandler = async (req, res) => {
+  try {
+    const activeClientNames = getActiveClientNames();
+    res.json(activeClientNames);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const initializeAPI = (app) => {
+  app.get("/api/users", getUsers);
+  app.get("/api/messages", getMessages);
+  app.post("/api/users", addUser);
+  app.post("/api/messages", addNewMessage);
+  app.get("/api/active", getActiveClientNamesHandler);
 };
 
 module.exports = { initializeAPI, addUser, addNewMessage };

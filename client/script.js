@@ -52,3 +52,14 @@ document.getElementById('messageForm').addEventListener('submit', (event) => {
   }
 });
 
+fetch("/api/active")
+  .then((response) => response.json())
+  .then((activeClientNames) => {
+    const activeList = document.getElementById("activeList");
+    activeClientNames.forEach((name) => {
+      const li = document.createElement("li");
+      li.textContent = name;
+      activeList.appendChild(li);
+    });
+  })
+  .catch((error) => console.error(error));
