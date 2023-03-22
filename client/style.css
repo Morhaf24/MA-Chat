@@ -2,10 +2,42 @@ body {
     font-family: 'Roboto', sans-serif;
   }
   
+  .chatWindow {
+    
+    background-color: rgb(50, 50, 50);
+    position: absolute;
+    z-index: auto;
+    margin-top: 185px;
+    color: white;
+    width: 95%;
+    min-height: 65vh;
+    height: auto;
+    border: 1px solid black;
+    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .chatWindow::-webkit-scrollbar {
+    width: 20px;
+  }
+  .chatWindow {
+    scrollbar-width: thin;
+    scrollbar-color: #004aad white;
+  }
+  .chatWindow::-webkit-scrollbar-track {
+    background: #004aad;
+    border-radius: 0 0 4px 0;
+  }
+  .chatWindow::-webkit-scrollbar-thumb {
+    background: white;
+    border-radius: 10px;
+  }
+
   .logo{
     background-color: black;
     width: 100%;
     border: 1px solid black;
+    position: fixed;
   }
 
   .logoimg {
@@ -17,10 +49,12 @@ body {
     }
 
   div.quests {
-    width: 100%;
+    width: 95%;
     height: 80px;
     border: 1px solid black;
     background-color: #004aad;
+    position: fixed;
+    margin-top: 105px;
   }
 
   .setting_logo {
@@ -28,18 +62,11 @@ body {
     margin-left: 90%;
   }
 
-  div.chatWindow {
-    background-color: rgb(50, 50, 50);
-    color: white;
-    width: 100%;
-    min-height: 70vh;
-    height: auto;
-    border: 1px solid black;
-  }
-  
   #messageForm {
+    position: fixed;
+    margin-top: 682px;
     background-color: #004aad;
-    width: 100%;
+    width: 95%;
     border: 1px solid black;
     height: 70px;
     
