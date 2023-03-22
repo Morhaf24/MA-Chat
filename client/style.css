@@ -4,7 +4,8 @@ body {
   
   .logo{
     background-color: black;
-    width: 99%;
+    width: 100%;
+    border: 1px solid black;
   }
 
   .logoimg {
@@ -16,7 +17,7 @@ body {
     }
 
   div.quests {
-    width: 98.9%;
+    width: 100%;
     height: 80px;
     border: 1px solid black;
     background-color: #004aad;
@@ -30,32 +31,36 @@ body {
   div.chatWindow {
     background-color: rgb(50, 50, 50);
     color: white;
-    width: 98.7%;
+    width: 100%;
     min-height: 70vh;
     height: auto;
-    border: 3px solid black;
+    border: 1px solid black;
   }
   
   #messageForm {
     background-color: #004aad;
-    width: 99%;
+    width: 100%;
+    border: 1px solid black;
+    height: 70px;
+    
   }
   
   #messageInput {
     background-color: #f0f0f0;
     color: #333;
     border-radius: 1em;
-    width: 91.5%;
-    height: 40px;
+    width: 90%;
+    height: 35px;
     padding: 10px;
     font-size: 16px;
-    margin: auto;
+    margin-left: 5px;
   }
   
   .send {
     background-color: white;
     margin-top: 15px;
-    margin-right: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
     color: black;
     border: none;
     border-radius: 10px;
@@ -71,3 +76,6 @@ body {
     background-color: black;
   }
   
+  .time {
+    color: blue;
+  }
