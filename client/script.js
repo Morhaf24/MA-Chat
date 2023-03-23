@@ -101,6 +101,9 @@ nameSubmitButton.addEventListener("click", async () => {
     })
   });
   if (response.ok) {
+    // Update the user's name in the UI
+    const userNameElement = document.getElementById("user-name");
+    userNameElement.innerText = newName;
     // Display success message
     console.log("Name updated successfully!");
   } else {
@@ -108,5 +111,3 @@ nameSubmitButton.addEventListener("click", async () => {
     console.error("Error updating name:", response.statusText);
   }
 });
-
-

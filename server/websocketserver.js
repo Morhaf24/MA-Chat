@@ -1,13 +1,22 @@
+const { OPEN } = require("ws");
 const WebSocket = require("ws");
-const { addUser }  = require("./api");
+const { addUser, updateUser }  = require("./api");
 const clients = new Set();
 
 // Initialite the WebSocketserver
 const initializeWebsocketServer = (server) => {
   const websocketServer = new WebSocket.Server({ server });
+  const sendUserName = async (req, ws, name) => {
+    try {
+      await updateUser(req, ws, name);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
   websocketServer.on("connection", async (ws, req) => {
     ws.result = {};
-
+  
     try {
       const result = await addUser(req);
       if (result.success) {
@@ -15,13 +24,15 @@ const initializeWebsocketServer = (server) => {
         ws.result.message = result.message;
         ws.user = { name: result.username };
         console.log(`${ws.user.name} joined`);
+        await sendUserName(req, ws, ws.user.name); 
+             
       } else {
         ws.send("Error by adding the User");
       }
     } catch (error) {
       console.error(error);
     }
-
+  
     clients.add(ws);
     const activeUsers = getActiveUsers();
     for (const client of clients) {
@@ -32,7 +43,7 @@ const initializeWebsocketServer = (server) => {
         }));
       }
     }
-
+  
     ws.on("message", (blob) => {
       const message = blob.toString();
       console.log(`New Message From ${ws.user.name}: ${message}`);
@@ -43,7 +54,7 @@ const initializeWebsocketServer = (server) => {
         }
       }
     });
-
+  
     ws.on("close", () => {
       clients.delete(ws);
       const activeUsers = getActiveUsers();
@@ -57,7 +68,7 @@ const initializeWebsocketServer = (server) => {
       }
     });
   });
-};
+};  
 
 
 function getActiveUsers() {

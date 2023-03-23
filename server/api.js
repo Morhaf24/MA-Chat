@@ -1,4 +1,5 @@
 const { executeSQL } = require("./database");
+const { initializeWebsocketServer } = require('./websocketserver');
 
 const getUsers = async (req, res) => { 
   try {
@@ -45,19 +46,18 @@ const addUser = async (req) => {
   }
 };
 
-const updateUser = async (req, res) => {
-  const myName = req.websocket.user.name;
-  const newName = req.body.name;
+const updateUser = async (req, ws, currentUserName, newName) => {
   try {
-    const result = await executeSQL(`UPDATE users SET name = '${newName}' WHERE name = '${myName}'`);
-    console.log(`${myName} changed name to ${newName}`);
-    res.sendStatus(200);
+    const result = await executeSQL(`UPDATE users SET name = '${newName}' WHERE name = '${currentUserName}'`);
+    console.log(`${currentUserName} changed name to ${newName}`);
     return { success: true, message: `Name changed to ${newName}` };
   } catch (error) {
     console.error(error);
     return { success: false, message: "Error changing name" };
   }
 };
+
+
 
 const initializeAPI = (app) => {
   app.get("/api/users", getUsers);
@@ -67,4 +67,4 @@ const initializeAPI = (app) => {
   app.put("/api/user", updateUser);
 };
 
-module.exports = { initializeAPI, addUser, addNewMessage };
+module.exports = { initializeAPI, addUser, addNewMessage, updateUser };
