@@ -5,27 +5,20 @@ const clients = new Set();
 
 // Initialite the WebSocketserver
 const initializeWebsocketServer = (server) => {
-  const websocketServer = new WebSocket.Server({ server });
-  const sendUserName = async (req, ws, name) => {
-    try {
-      await updateUser(req, ws, name);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  
+  const websocketServer = new WebSocket.Server({ server });  
   websocketServer.on("connection", async (ws, req) => {
     ws.result = {};
-  
+
     try {
       const result = await addUser(req);
       if (result.success) {
-        ws.send(result.message);
-        ws.result.message = result.message;
-        ws.user = { name: result.username };
+        if (result.newName) {
+          ws.user = { name: result.newName };
+        } else {
+          ws.user = { name: result.username };
+        }
         console.log(`${ws.user.name} joined`);
-        await sendUserName(req, ws, ws.user.name); 
-             
+        ws.send(JSON.stringify({ name: ws.user.name }));
       } else {
         ws.send("Error by adding the User");
       }
@@ -68,14 +61,14 @@ const initializeWebsocketServer = (server) => {
       }
     });
   });
-};  
+};
 
 
 function getActiveUsers() {
   const activeUsers = [];
   for (const client of clients) {
     if (client.readyState === WebSocket.OPEN) {
-      const user = client.result ? client.result.message : "Unknown User";
+      const user = client.user ? client.user.name : "Unknown User";
       activeUsers.push(user);
     }
   }

@@ -46,18 +46,19 @@ const addUser = async (req) => {
   }
 };
 
-const updateUser = async (req, ws, currentUserName, newName) => {
+
+const updateUser = async (req, res) => {
+  const oldName = req.body.oldName; 
+  const newName = req.body.newName; 
   try {
-    const result = await executeSQL(`UPDATE users SET name = '${newName}' WHERE name = '${currentUserName}'`);
-    console.log(`${currentUserName} changed name to ${newName}`);
-    return { success: true, message: `Name changed to ${newName}` };
+    const result = await executeSQL(`UPDATE users SET name = '${newName}' WHERE name = '${oldName}'`);
+    console.log(`${oldName} changed name to ${newName}`);
+    return { success: true, message: `${newName}`, newName };
   } catch (error) {
     console.error(error);
-    return { success: false, message: "Error changing name" };
+    return res.status(500).json({ success: false, message: "Error changing name" });
   }
 };
-
-
 
 const initializeAPI = (app) => {
   app.get("/api/users", getUsers);
