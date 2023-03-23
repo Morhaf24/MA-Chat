@@ -45,11 +45,26 @@ const addUser = async (req) => {
   }
 };
 
+const updateUser = async (req, res) => {
+  const myName = req.websocket.user.name;
+  const newName = req.body.name;
+  try {
+    const result = await executeSQL(`UPDATE users SET name = '${newName}' WHERE name = '${myName}'`);
+    console.log(`${myName} changed name to ${newName}`);
+    res.sendStatus(200);
+    return { success: true, message: `Name changed to ${newName}` };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Error changing name" };
+  }
+};
+
 const initializeAPI = (app) => {
   app.get("/api/users", getUsers);
   app.get("/api/messages", getMessages);
   app.post("/api/users", addUser);
   app.post("/api/messages", addNewMessage);
+  app.put("/api/user", updateUser);
 };
 
 module.exports = { initializeAPI, addUser, addNewMessage };

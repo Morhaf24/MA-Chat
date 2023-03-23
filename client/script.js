@@ -86,3 +86,27 @@ socket.addEventListener("message", (event) => {
   }
 });
 
+const nameInput = document.getElementById("name-input");
+const nameSubmitButton = document.getElementById("name-submit-button");
+
+nameSubmitButton.addEventListener("click", async () => {
+  const newName = nameInput.value;
+  const response = await fetch(`/api/user`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: newName
+    })
+  });
+  if (response.ok) {
+    // Display success message
+    console.log("Name updated successfully!");
+  } else {
+    // Display error message
+    console.error("Error updating name:", response.statusText);
+  }
+});
+
+
