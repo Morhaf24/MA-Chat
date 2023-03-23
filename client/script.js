@@ -37,6 +37,7 @@ socket.addEventListener('message', (event) => {
   const time = new Date().toLocaleTimeString();
   message.innerText = `[${time} ${event.data}`;
   chatWindow.appendChild(message);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
 });
 
 socket.addEventListener('error', (event) => {
