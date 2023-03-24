@@ -44,4 +44,17 @@ const initializeDBSchema = async () => {
   await executeSQL(messageTableQuery);
 };
 
-module.exports = { executeSQL, initializeMariaDB, initializeDBSchema };
+const createOldMessagesUser = async () => {
+  const checkUserQuery = `SELECT * FROM users WHERE id = 1 AND name = 'old messages'`;
+  const existingUser = await executeSQL(checkUserQuery);
+  if (existingUser.length > 0) {
+    return;
+  }
+  const createUserQuery = `INSERT INTO users (id, name) VALUES (1, 'old messages')`;
+  await executeSQL(createUserQuery);
+};
+
+
+
+
+module.exports = { executeSQL, initializeMariaDB, initializeDBSchema, createOldMessagesUser };
