@@ -87,27 +87,37 @@ socket.addEventListener("message", (event) => {
   }
 });
 
+let oldName = "";
+var newName = "";
+
+socket.addEventListener("message", (event) => {
+  const data = JSON.parse(event.data);
+  oldName = data.name;
+  console.log(oldName);
+
+
 const nameInput = document.getElementById("name-input");
 const nameSubmitButton = document.getElementById("name-submit-button");
 
 nameSubmitButton.addEventListener("click", async () => {
-  const newName = nameInput.value;
+  const data = JSON.parse(event.data);
+  oldName = data.name;
+  newName = nameInput.value;
   const response = await fetch(`/api/user`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      name: newName
-    })
+    body: JSON.stringify({ newName, oldName })
   });
   if (response.ok) {
-    // Display success message
+    const userNameElement = document.getElementById("user-name");
+    userNameElement.innerText = newName;
     console.log("Name updated successfully!");
+    oldName = newName;
   } else {
-    // Display error message
     console.error("Error updating name:", response.statusText);
   }
 });
 
-
+});
