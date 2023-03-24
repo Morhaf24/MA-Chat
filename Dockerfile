@@ -5,13 +5,13 @@ FROM node:18
 WORKDIR /app
 
 # Copy the package.json and package-lock.json files to the container
-COPY package*.json ./
+COPY package*.json ./app/
 
 # Install the dependencies
-RUN npm install
+RUN yarn install
 
 # Copy the source code to the container
-COPY . .
+COPY . /app/
 
 # Set the NODE_ENV environment variable to production
 ENV NODE_ENV=production
@@ -20,4 +20,4 @@ ENV NODE_ENV=production
 EXPOSE 3000
 
 # Start the server
-CMD ["npm", "start"]
+CMD ["yarn", "dev"]

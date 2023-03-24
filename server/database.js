@@ -16,13 +16,14 @@ const executeSQL = async (query) => {
   try {
     conn = await pool.getConnection();
     const res = await conn.query(query);
-    conn.end();
+    conn.release();
     return res;
   } catch (err) {
     if (conn) {
-      conn.end();
+      conn.release();
     }
     console.log(err);
+    throw err;
   }
 };
 
@@ -53,8 +54,5 @@ const createOldMessagesUser = async () => {
   const createUserQuery = `INSERT INTO users (id, name) VALUES (1, 'old messages')`;
   await executeSQL(createUserQuery);
 };
-
-
-
 
 module.exports = { executeSQL, initializeMariaDB, initializeDBSchema, createOldMessagesUser };

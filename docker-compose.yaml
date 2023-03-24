@@ -26,6 +26,20 @@ services:
       - MYSQL_ROOT_PASSWORD=supersecret123
     ports:
       - 9200:80
+  
+  machat:
+    image: mouayad04/machat:machat
+    depends_on:
+      - mariadb
+    restart: always
+    environment:
+      - DB_NAME=mychat
+      - DB_USER=root
+      - DB_PASSWORD=supersecret123
+      - DB_HOST=mariadb
+
+    ports:
+      - 3000:3000
 
 volumes:
   m321_project_mariadb:
