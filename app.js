@@ -4,7 +4,7 @@ var livereload = require("livereload");
 var connectLiveReload = require("connect-livereload");
 const { initializeWebsocketServer } = require("./server/websocketserver");
 const { initializeAPI } = require("./server/api");
-const { initializeMariaDB, initializeDBSchema, executeSQL } = require("./server/database");
+const { initializeMariaDB, initializeDBSchema, executeSQL, createOldMessagesUser } = require("./server/database");
 
 // Create the express server
 const app = express();
@@ -46,6 +46,7 @@ initializeAPI(app);
   // Initialize the database
   await initializeMariaDB();
   await initializeDBSchema();
+  await createOldMessagesUser();
 
   //start the web server
   const serverPort = process.env.PORT || 3000;

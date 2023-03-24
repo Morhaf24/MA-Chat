@@ -1,5 +1,4 @@
 const { executeSQL } = require("./database");
-const { initializeWebsocketServer } = require('./websocketserver');
 
 const getUsers = async (req, res) => { 
   try {
@@ -22,10 +21,14 @@ const getMessages = async (req, res) => {
   }
 };
 
-const addNewMessage = async (message, time) => {
+const addNewMessage = async (req, res) => {
+  const name = req.body.name;
+  const message = req.body.message; 
+  const time = req.body.time;
+  const idResult = await executeSQL(`SELECT id FROM users WHERE name = "${name}";`);
+  const id = idResult[0].id;
   try {
-    const values = [message, time];
-    await executeSQL("INSERT INTO messages (user_id, message, time) VALUES ('1', ?, ?)", values);
+    await executeSQL(`INSERT INTO messages (user_id, message, time) VALUES ("${id}", "${message}", "${time}")`);
   } catch (error) {
     console.error(error);
     throw new Error("Internal Server Error");
@@ -34,7 +37,7 @@ const addNewMessage = async (message, time) => {
 
 const addUser = async (req) => {
   try {
-    const randomName = "quest" + Math.floor(Math.random() * 10000);
+    const randomName = "quest" + Math.floor(Math.random() * 100000);
     await executeSQL(`INSERT INTO users (name) VALUES ("${randomName}")`);
     const result = await executeSQL("SELECT name FROM users ORDER BY id DESC LIMIT 1");
     const username = result[0].name;
@@ -45,7 +48,6 @@ const addUser = async (req) => {
     return { success: false, message: "Error adding user", username: null };
   }
 };
-
 
 const updateUser = async (req, res) => {
   const oldName = req.body.oldName; 

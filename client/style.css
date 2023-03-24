@@ -130,3 +130,7 @@ body {
     color: white;
     background-color: black;
   }
+
+  .old-message{
+    color: rgba(200, 200, 200);
+  }

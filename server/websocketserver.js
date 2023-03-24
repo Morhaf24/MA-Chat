@@ -1,6 +1,6 @@
 const { OPEN } = require("ws");
 const WebSocket = require("ws");
-const { addUser, updateUser }  = require("./api");
+const { addUser }  = require("./api");
 const clients = new Set();
 
 // Initialite the WebSocketserver
