@@ -12,14 +12,17 @@ const initializeMariaDB = async () => {
 };
 
 const executeSQL = async (query) => {
+  let conn;
   try {
     conn = await pool.getConnection();
     const res = await conn.query(query);
     conn.end();
     return res;
   } catch (err) {
-    conn.end();
-    console.log(err)
+    if (conn) {
+      conn.end();
+    }
+    console.log(err);
   }
 };
 
